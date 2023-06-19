@@ -1,15 +1,14 @@
 {
-  "name": "SMSIA-main",
+  "name": "jb-activity-template",
   "version": "1.0.0",
-  "description": "My Application",
-  "main": "public/js/customActivity.js",
-  "scripts": {
-    "start": "node public/js/customActivity.js"
+  "description": "Journey Builder Activity Template",
+  "engines": {
+    "node": "6.11.1"
   },
-  "dependencies": {
-    "axios": "^0.24.0",
-    "express": "^4.17.1"
-  }
+  "scripts": {
+    "start": "node app.js",
+    "postinstall": "gulp default"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/devsutd/journey-builder-activity-template.git"
@@ -40,6 +39,4 @@
   "devDependencies": {
     "gulp": "^4.0.2"
   }
-
 }
-
