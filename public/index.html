@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title></title>
+    <title>Enviar SMS</title>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -26,19 +26,14 @@
 </head>
 
 <body>
-    <div id="step1" class="step">
-        <div class="slds-grid">
-
-            <main class="slds-col slds-size--1-of-3 slds-p-horizontal--small">
-              <h1>Welcome to your activity!</h1>
-
-            </main>
-           
-            
-
-        </div>
-
-    </div>
+  <h1>Enviar SMS</h1>
+  <form action="/enviar-sms" method="post">
+    <label for="toPhone">Teléfono:</label>
+    <input type="text" id="toPhone" name="toPhone" required><br>
+    <label for="message">Mensaje:</label>
+    <textarea id="message" name="message" rows="4" cols="50" required></textarea><br>
+    <button type="submit">Enviar SMS</button>
+  </form>
 </body>
 
 </html>
