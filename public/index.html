@@ -23,18 +23,71 @@
             require(config, dependencies);
         })();
     </script>
-</head>
 
+    <meta charset="UTF-8">
+    <title>Enviar SMS</title>
+    <script src="ruta/a/jquery.js"></script>
+</head>
 <body>
   <h1>Enviar SMS</h1>
-<br>
-  <form action="/enviar-sms" method="post">
+  <br>
+  <form id="smsForm" method="post">
     <label for="toPhone">Teléfono:</label>
     <input type="text" id="toPhone" name="toPhone" required><br><br>
     <label for="message">Mensaje:</label>
     <textarea id="message" name="message" rows="4" cols="50" required></textarea><br><br>
     <button type="submit">Enviar SMS</button>
   </form>
+
+  <script>
+    $(document).ready(function() {
+      $('#smsForm').submit(function(event) {
+        event.preventDefault(); // Evita el envío del formulario por defecto
+
+        var phone = $('#toPhone').val();
+        var message = $('#message').val();
+
+        // Generación de token
+        $.ajax({
+          url: 'https://api.bg.com.bo/bgdev/api-oauth/oauth2/token',
+          method: 'POST',
+          data: {
+            client_id: 'bga-app-api-crm-01',
+            client_secret: '8DrLhkRINhafvUtw1Kf83aLuTIWE1eEa',
+            grant_type: 'client_credentials'
+          },
+          success: function(tokenResponse) {
+            var accessToken = tokenResponse.access_token;
+
+            // Envío de notificación
+            $.ajax({
+              url: 'https://api.bg.com.bo/bgdev/int/notifc/v1/sms/send',
+              method: 'POST',
+              headers: {
+                Authorization: 'Bearer ' + accessToken
+              },
+              data: {
+                to: phone,
+                message: message
+              },
+              success: function(response) {
+                console.log('Envío de SMS exitoso:', response);
+                // Realiza cualquier acción adicional después de enviar el SMS
+              },
+              error: function(error) {
+                console.error('Error en el envío de SMS:', error);
+                // Realiza cualquier acción adicional en caso de error en el envío de SMS
+              }
+            });
+          },
+          error: function(error) {
+            console.error('Error en la generación de token:', error);
+            // Realiza cualquier acción adicional en caso de error en la generación de token
+          }
+        });
+      });
+    });
+  </script>
 </body>
 
 </html>
