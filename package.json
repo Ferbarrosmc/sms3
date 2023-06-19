@@ -4,7 +4,7 @@
   "description": "My Application",
   "main": "public/js/customActivity.js",
   "scripts": {
-    "start": "node public/js/customActivity.js"
+    "start": "node customActivity.js"
   },
   "dependencies": {
     "axios": "^0.24.0",
