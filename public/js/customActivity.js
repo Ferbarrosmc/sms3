@@ -1,58 +1,104 @@
-const express = require('express');
-const axios = require('axios');
-const app = express();
+define([
+    'postmonger'
+], function (
+    Postmonger
+) {
+    'use strict';
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+    var connection = new Postmonger.Session();
+    var authTokens = {};
+    var payload = {};
+    $(window).ready(onRender);
 
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '../index.html');
-});
+    connection.on('initActivity', initialize);
+    connection.on('requestedTokens', onGetTokens);
+    connection.on('requestedEndpoints', onGetEndpoints);
+    connection.on('requestedInteraction', onRequestedInteraction);
+    connection.on('requestedTriggerEventDefinition', onRequestedTriggerEventDefinition);
+    connection.on('requestedDataSources', onRequestedDataSources);
 
-app.post('/enviar-sms', async (req, res) => {
-  const { toPhone, message } = req.body;
+    connection.on('clickedNext', save);
+   
+    function onRender() {
+        // JB will respond the first time 'ready' is called with 'initActivity'
+        connection.trigger('ready');
 
-  try {
-    // Obtener el token de autenticación
-    const tokenResponse = await axios.post('https://api.bg.com.bo/bgdev/api-oauth/oauth2/token', {
-      client_id: 'bga-app-api-crm-01',
-      client_secret: '8DrLhkRINhafvUtw1Kf83aLuTIWE1eEa',
-      grant_type: 'client_credentials'
-    });
+        connection.trigger('requestTokens');
+        connection.trigger('requestEndpoints');
+        connection.trigger('requestInteraction');
+        connection.trigger('requestTriggerEventDefinition');
+        connection.trigger('requestDataSources');  
 
-    const accessToken = tokenResponse.data.access_token;
+    }
 
-    // Construir el objeto JSON con los datos del mensaje
-    const smsData = {
-      data: {
-        toPhone: toPhone,
-        message: message,
-        typeMessage: 3,
-        idRequestor: 10000,
-        funcionalityId: 30
-      },
-      metadata: {
-        codUsuario: 'JBK',
-        codSucursal: 70,
-        codAplicacion: 1
-      }
-    };
+    function onRequestedDataSources(dataSources){
+        console.log('*** requestedDataSources ***');
+        console.log(dataSources);
+    }
 
-    // Enviar la solicitud a la API para enviar el SMS
-    await axios.post('https://api.bg.com.bo/bgdev/int/notifc/v1/sms/send', smsData, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    });
+    function onRequestedInteraction (interaction) {    
+        console.log('*** requestedInteraction ***');
+        console.log(interaction);
+     }
 
-    res.send('SMS enviado correctamente');
-  } catch (error) {
-    console.error('Error al enviar el SMS:', error);
-    res.status(500).send('Error al enviar el SMS');
-  }
-});
+     function onRequestedTriggerEventDefinition(eventDefinitionModel) {
+        console.log('*** requestedTriggerEventDefinition ***');
+        console.log(eventDefinitionModel);
+    }
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Servidor iniciado en el puerto ${port}`);
+    function initialize(data) {
+        console.log(data);
+        if (data) {
+            payload = data;
+        }
+        
+        var hasInArguments = Boolean(
+            payload['arguments'] &&
+            payload['arguments'].execute &&
+            payload['arguments'].execute.inArguments &&
+            payload['arguments'].execute.inArguments.length > 0
+        );
+
+        var inArguments = hasInArguments ? payload['arguments'].execute.inArguments : {};
+
+        console.log(inArguments);
+
+        $.each(inArguments, function (index, inArgument) {
+            $.each(inArgument, function (key, val) {
+                
+              
+            });
+        });
+
+        connection.trigger('updateButton', {
+            button: 'next',
+            text: 'done',
+            visible: true
+        });
+    }
+
+    function onGetTokens(tokens) {
+        console.log(tokens);
+        authTokens = tokens;
+    }
+
+    function onGetEndpoints(endpoints) {
+        console.log(endpoints);
+    }
+
+    function save() {
+        var postcardURLValue = $('#postcard-url').val();
+        var postcardTextValue = $('#postcard-text').val();
+
+        payload['arguments'].execute.inArguments = [{
+            "tokens": authTokens
+        }];
+        
+        payload['metaData'].isConfigured = true;
+
+        console.log(payload);
+        connection.trigger('updateActivity', payload);
+    }
+
+
 });
