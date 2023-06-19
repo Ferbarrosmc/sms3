@@ -1,4 +1,19 @@
 {
+  "name": "SMSIA-main",
+  "version": "1.0.0",
+  "description": "My Application",
+  "main": "public/js/customActivity.js",
+  "scripts": {
+    "start": "node public/js/customActivity.js"
+  },
+  "dependencies": {
+    "axios": "^0.24.0",
+    "express": "^4.17.1"
+  }
+
+}
+
+{
   "name": "jb-activity-template",
   "version": "1.0.0",
   "description": "Journey Builder Activity Template",
